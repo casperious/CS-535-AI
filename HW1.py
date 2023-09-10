@@ -126,8 +126,7 @@ g4_adjacency_matrix = [[0,0,0,0,0,0,0,0,0,0,0,0],
                        ]
 
 maps = {0: 'a',1: 'b', 2: 'c', 3:'d',4:'e',5:'f',6:'G',7:'h',8:'p',9:'q',10:'r',11:'S'}
-visited = set()
-parentMap={'S': None}
+
 
 def DFS_Recursion_list(visited, graph, node, target):
     print(node, end=",")
@@ -215,7 +214,7 @@ def DFS_Recursion_Matrix(visited,graph,node,target):
                 #print(curr)
                 parentMap[curr]=node
                 #print(parentMap[curr])
-                print("Path Returned", end=" ")
+                print("Path Returned", end=": ")
                 printStack = []
                 while(curr!=None):
                     printStack.append(curr)
@@ -232,29 +231,136 @@ def DFS_Recursion_Matrix(visited,graph,node,target):
                 parentMap[i]=node
                 DFS_Recursion_Matrix(visited, graph, i, target)
     
-def BFS_Recursion():
+def DFS_Loop_Matrix(visited, graph, node, target):
+    stack=[]
+    parentMap = {11: None}
+    stack.append(node)
+    childStack=[]
+    while(len(stack)>0):
+        #print(childStack)
+        v = stack[-1]
+        #print("now at ",v)
+        stack.pop()
+        if(visited[v]==False):
+            print(maps[v], end=",")
+            visited[v]=True
+            for i in range(len(graph[v])):
+                if(graph[v][i]==1 and (not visited[i])):
+                    if(graph[v][i]==1 and i==target):
+                        print(maps[i])
+                        curr=i
+                        parentMap[curr]=v
+                        stack=[]
+                        print("Path Returned", end=": ")
+                        #print(curr)
+                        #print()
+                        printStack=[]
+                        while(curr!=None):
+                            printStack.append(curr)
+                            curr=parentMap[curr]
+                        while(len(printStack)>1):
+                            pathNode = printStack[-1]
+                            printStack.pop()
+                            print(maps[pathNode],end="-")
+                        pathNode=printStack[-1]
+                        printStack.pop()
+                        print(maps[pathNode])
+                        return;
+                    else:
+                        #print("adding ", i, "to childStack")
+                        childStack.append(i)
+                        parentMap[i]=v
+            while(len(childStack)>0):
+                child = childStack[-1]
+                childStack.pop()
+                parentMap[child]=v
+                stack.append(child)
+                #print(stack)
+                
+    
+def BFS_Recursion_List(visited, graph, node, target):
     print("In recursion BFS")
     
-def BFS_Loop():
+    
+def BFS_Loop_List():
     print("In loop BFS")
     
-def UCS():
-    print("In UCS")
+def BFS_Recursion_Matrix():
+    print("In recursion BFS Matrix")
+
+def BFS_Loop_Matrix():
+    print("In loop BFS Matrix")
     
-print("Recursion on Vertex List")
-print()
-print("States Expanded: ",end="")
-DFS_Recursion_list(visited, g1_vertex_list, 'S', "G")
-print("------------------")
+def UCS_list():
+    print("In UCS List")
+    
+def UCS_matrix():
+    print("In UCS Matrix")
+
 visited = set()
 parentMap={'S': None}
-print("Iterative on Vertext List")
 print()
+print("DFS Recursion on G1 Vertex List")
+print("States Expanded: ",end="")
+DFS_Recursion_list(visited, g1_vertex_list, 'S', "G")
+print()
+print("-------------------------------------------")
+
+visited = set()
+parentMap={'S': None}
+print("DFS Loop on G1 Vertext List")
 print("States Expanded: ",end="")
 DFS_Loop_list(visited, g1_vertex_list, 'S', 'G')
-print("------------------")
+print("-------------------------------------------")
 
 visited = [False]*len(g1_adjacency_matrix[0])
 parentMap={11: None}
+print("DFS Recursion on G1 adjacency matrix")
 print("States Expanded", end=": ")
 DFS_Recursion_Matrix(visited, g1_adjacency_matrix, 11, 6)
+print()
+print("-------------------------------------------")
+
+visited = [False]*len(g1_adjacency_matrix[0])
+parentMap={11:None}
+print("DFS Loop on G1 adjacency matrix")
+print("States Expanded",end=": ")
+DFS_Loop_Matrix(visited, g1_adjacency_matrix, 11, 6)
+print()
+print("-------------------------------------------")
+print("-------------------------------------------")
+
+visited = set()
+parentMap={'S': None}
+print()
+print("DFS Recursion on G2 Vertex List")
+print("States Expanded: ",end="")
+DFS_Recursion_list(visited, g2_vertex_list, 'S', "G")
+print()
+print("-------------------------------------------")
+
+visited = set()
+parentMap={'S': None}
+print("DFS Loop on G2 Vertext List")
+print("States Expanded: ",end="")
+DFS_Loop_list(visited, g2_vertex_list, 'S', 'G')
+print("-------------------------------------------")
+
+visited = [False]*len(g2_adjacency_matrix[0])
+parentMap={11: None}
+print("DFS Recursion on G2 adjacency matrix")
+print("States Expanded", end=": ")
+DFS_Recursion_Matrix(visited, g2_adjacency_matrix, 11, 6)
+print()
+print("-------------------------------------------")
+
+visited = [False]*len(g2_adjacency_matrix[0])
+parentMap={11:None}
+print("DFS Loop on G2 adjacency matrix")
+print("States Expanded",end=": ")
+DFS_Loop_Matrix(visited, g2_adjacency_matrix, 11, 6)
+print()
+print("-------------------------------------------")
+print("-------------------------------------------")
+
+
