@@ -278,18 +278,152 @@ def DFS_Loop_Matrix(visited, graph, node, target):
                 #print(stack)
                 
     
-def BFS_Recursion_List(visited, graph, node, target):
-    print("In recursion BFS")
+def BFS_Recursion_List(visited, graph, target, queue):
+    node = queue[0]
+    #print(queue)
+    #print(visited)
+    #queue.popleft()
+    if(node not in visited):
+        print(node,end=",")
+        queue.popleft()
+        visited.add(node)
+        for neighbor in graph[node]:
+            if(neighbor not in visited):
+                if(neighbor==target):
+                    print(neighbor)
+                    curr = target
+                    parentMap[curr]=node
+                    print("Path Returned:",end=" ")
+                    printStack = []
+                    while(curr!=None):
+                        printStack.append(curr)
+                        curr = parentMap[curr]
+                    while(len(printStack)>1):
+                        pathNode = printStack[-1]
+                        printStack.pop()
+                        print(pathNode, end="-")
+                    pathNode = printStack[-1]
+                    printStack.pop();
+                    print(pathNode)
+                    return
+                else:
+                    if(neighbor not in parentMap):
+                        parentMap[neighbor]=node
+                    queue.append(neighbor)
+        BFS_Recursion_List(visited, graph, target, queue)
+    else:
+        queue.popleft()
+        BFS_Recursion_List(visited,graph,target,queue)
     
+def BFS_Loop_List(visited, graph, target, queue):
+    while(len(queue)>0):
+        node = queue[0]
+        #visited.add(node)
+        queue.popleft()
+        if(node not in visited):
+            print(node,end=",")
+            visited.add(node)
+            for neighbor in graph[node]:
+                if(neighbor not in visited):
+                    if(neighbor==target):
+                        print(neighbor)
+                        parentMap[neighbor] = node
+                        #stack = []
+                        printStack = []
+                        curr = target
+                        print("Path Returned: ",end="")
+                        while (curr!=None):
+                            printStack.append(curr)
+                            curr = parentMap[curr]
+                        while(len(printStack)>1):
+                            pathNode = printStack[-1]
+                            printStack.pop()
+                            print(pathNode, end="-")
+                        pathNode = printStack[-1]
+                        printStack.pop();
+                        print(pathNode)
+                        return
+                    else:
+                        if(neighbor not in parentMap):
+                            parentMap[neighbor]=node
+                        queue.append(neighbor)
+            
+        
+    #print("In loop BFS")
     
-def BFS_Loop_List():
-    print("In loop BFS")
-    
-def BFS_Recursion_Matrix():
-    print("In recursion BFS Matrix")
+def BFS_Recursion_Matrix(visited, graph, target, queue):
+    #print("In recursion BFS Matrix")
+    node = queue[0]
+    queue.popleft()
+    if(node==target):
+        print(maps[node])
+        print("Path Returned: ",maps[node])
+        return
+    if(not visited[node]):
+        print(maps[node], end=",")
+        visited[node]=True
+        for i in range(len(graph[node])):
+            if(graph[node][i]==1 and (not visited[i])):
+                if(i==target):
+                    print(maps[i])
+                    curr = target
+                    #print(curr)
+                    parentMap[curr]=node
+                    #print(parentMap[curr])
+                    print("Path Returned", end=": ")
+                    printStack = []
+                    while(curr!=None):
+                        printStack.append(curr)
+                        curr = parentMap[curr]
+                    while(len(printStack)>1):
+                        pathNode=printStack[-1]
+                        printStack.pop()
+                        print(maps[pathNode],end="-")
+                    pathNode = printStack[-1]
+                    printStack.pop()
+                    print(maps[pathNode])
+                    return
+                else:
+                    if( i not in parentMap):
+                        parentMap[i]=node
+                    queue.append(i)
+    BFS_Recursion_Matrix(visited,graph,target,queue)
+        
 
-def BFS_Loop_Matrix():
-    print("In loop BFS Matrix")
+def BFS_Loop_Matrix(visited, graph, target, queue):
+    #print("In loop BFS Matrix")
+    while(len(queue)>0):
+        node = queue[0]
+        queue.popleft()
+        if(not visited[node]):
+            print(maps[node],end=",")
+            visited[node]=True
+            for i in range(len(graph[node])):
+                if(graph[node][i]==1 and (not visited[i])):
+                    if(i==target):
+                        print(maps[i])
+                        curr = target
+                        #print(curr)
+                        parentMap[curr]=node
+                        #print(parentMap[curr])
+                        print("Path Returned", end=": ")
+                        printStack = []
+                        while(curr!=None):
+                            printStack.append(curr)
+                            curr = parentMap[curr]
+                        while(len(printStack)>1):
+                            pathNode=printStack[-1]
+                            printStack.pop()
+                            print(maps[pathNode],end="-")
+                        pathNode = printStack[-1]
+                        printStack.pop()
+                        print(maps[pathNode])
+                        return
+                    else:
+                        if(i not in parentMap):
+                            parentMap[i]=node
+                        queue.append(i)        
+            
     
 def UCS_list():
     print("In UCS List")
@@ -308,9 +442,30 @@ print("-------------------------------------------")
 
 visited = set()
 parentMap={'S': None}
-print("DFS Loop on G1 Vertext List")
+print("DFS Loop on G1 Vertex List")
 print("States Expanded: ",end="")
 DFS_Loop_list(visited, g1_vertex_list, 'S', 'G')
+print("-------------------------------------------")
+
+queue = deque()
+queue.append('S')
+visited = set()
+parentMap = {'S':None}
+print("BFS Recursion on G1 Vertex List")
+print("States Expanded", end=": ")
+BFS_Recursion_List(visited, g1_vertex_list, 'G', queue)
+print()
+print("-------------------------------------------")
+
+queue = deque()
+queue.append('S')
+visited = set()
+parentMap = {'S':None}
+print("BFS Loop on G1 Vertex List")
+print("States Expanded", end=": ")
+BFS_Loop_List(visited, g1_vertex_list, 'G', queue)
+print()
+print("-------------------------------------------")
 print("-------------------------------------------")
 
 visited = [False]*len(g1_adjacency_matrix[0])
@@ -328,6 +483,28 @@ print("States Expanded",end=": ")
 DFS_Loop_Matrix(visited, g1_adjacency_matrix, 11, 6)
 print()
 print("-------------------------------------------")
+
+queue = deque()
+queue.append(11)
+visited = [False]*len(g1_adjacency_matrix[0])
+parentMap={11: None}
+print("BFS Recursion on G1 adjacency matrix")
+print("States Expanded", end=": ")
+BFS_Recursion_Matrix(visited, g1_adjacency_matrix, 6, queue)
+print()
+print("-------------------------------------------")
+
+queue = deque()
+queue.append(11)
+visited = [False]*len(g1_adjacency_matrix[0])
+parentMap={11:None}
+print("BFS Loop on G1 adjacency matrix")
+print("States Expanded",end=": ")
+BFS_Loop_Matrix(visited, g1_adjacency_matrix, 6, queue)
+print()
+print("-------------------------------------------")
+
+print("-------------------------------------------")
 print("-------------------------------------------")
 
 visited = set()
@@ -341,9 +518,30 @@ print("-------------------------------------------")
 
 visited = set()
 parentMap={'S': None}
-print("DFS Loop on G2 Vertext List")
+print("DFS Loop on G2 Vertex List")
 print("States Expanded: ",end="")
 DFS_Loop_list(visited, g2_vertex_list, 'S', 'G')
+print("-------------------------------------------")
+
+queue = deque()
+queue.append('S')
+visited = set()
+parentMap = {'S':None}
+print()
+print("BFS Recursion on G2 Vertex List")
+print("States Expanded: ",end="")
+BFS_Recursion_List(visited, g2_vertex_list, "G", queue)
+print()
+print("-------------------------------------------")
+
+queue = deque()
+queue.append('S')
+visited = set()
+parentMap = {'S':None}
+print("BFS Loop on G2 Vertex List")
+print("States Expanded: ",end="")
+BFS_Loop_List(visited, g2_vertex_list, 'G', queue)
+print("-------------------------------------------")
 print("-------------------------------------------")
 
 visited = [False]*len(g2_adjacency_matrix[0])
@@ -361,6 +559,26 @@ print("States Expanded",end=": ")
 DFS_Loop_Matrix(visited, g2_adjacency_matrix, 11, 6)
 print()
 print("-------------------------------------------")
+
+queue = deque()
+queue.append(11)
+visited = [False]*len(g1_adjacency_matrix[0])
+parentMap={11:None}
+print()
+print("BFS Recursion on G2 adjacency matrix")
+print("States Expanded: ",end="")
+BFS_Recursion_Matrix(visited, g2_adjacency_matrix, 6, queue)
+print()
 print("-------------------------------------------")
 
+queue = deque()
+queue.append(11)
+visited = [False]*len(g1_adjacency_matrix[0])
+parentMap={11:None}
+print("BFS Loop on G2 adjacency matrix")
+print("States Expanded: ",end="")
+BFS_Loop_Matrix(visited, g2_adjacency_matrix, 6, queue)
+print("-------------------------------------------")
 
+print("-------------------------------------------")
+print("-------------------------------------------")
