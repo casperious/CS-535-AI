@@ -60,114 +60,113 @@ def testTree():
 
     printTree(myTree)
 
-#testTree()
 
 def value(node,state):
     if(node.getLeftChild()==None and node.getRightChild()==None):
         return node.getNodeValue()
     elif(state=="Min"):                                                         #if curr state is Min, then next states are max
         node.setNodeValue(float('inf'))
-        return min(node.getNodeValue(),max_value(node.getLeftChild()),max_value(node.getRightChild()))
+        leftVal,leftNode, leftPath = max_value(node.getLeftChild(),[])
+        rightVal,rightNode, rightPath = max_value(node.getRightChild(),[])
+        minVal= min(node.getNodeValue(),leftVal,rightVal)
     elif(state=="Max"):
         node.setNodeValue(float("-inf"))
-        return max(node.getNodeValue(),min_value(node.getLeftChild()),min_value(node.getRightChild()))
+        leftVal,leftNode, leftPath = min_value(node.getLeftChild(),[])
+        rightVal,rightNode, rightPath = min_value(node.getRightChild(),[])
+        retPath = []
+        maxVal = max(node.getNodeValue(),leftVal,rightVal)
+        if(leftVal>rightVal):
+            retPath = leftPath
+            retNode = leftNode
+        else:
+            retPath = rightPath
+            retNode = rightNode
+    retPath.append(node.getNodeId())
+    print(retPath)
+    return retNode
         
-def min_value(node):
+def min_value(node,path):
     if(node==None):
         return float('-inf')
-    #node.value = float("inf") 
     if(node.getLeftChild()==None and node.getRightChild()==None):
-         print("min val for ",node.getNodeId()," is ", node.getNodeValue())
-         return node.getNodeValue()
+         retPath = [node.getNodeId()]
+         path.append(node.getNodeId())
+         return node.getNodeValue(),node, retPath
     node.setNodeValue(float("inf"))
-    val = min(node.getNodeValue(),max_value(node.getLeftChild()),max_value(node.getRightChild()))
-    print("min val for ",node.getNodeId()," is ", val)
+    leftVal,leftNode, leftPath = max_value(node.getLeftChild(),path)
+    rightVal,rightNode, rightPath = max_value(node.getRightChild(),path)
+    val = min(node.getNodeValue(),leftVal,rightVal)
+    retPath = []
+    retNode = 0
+    if(val==node.getNodeValue()):
+        print("Not adding to path")
+    elif(leftVal<rightVal):
+        retPath = leftPath
+        retNode = leftNode
+    else:
+        retPath = rightPath
+        retNode = rightNode
     node.setNodeValue = val
-    return val
+    retPath.append(node.getNodeId())
+    return val,retNode,retPath
     
-def max_value(node):
+def max_value(node,path):
     if(node==None):
         return float("inf")
-    #node.value = float("-inf")
     if(node.getLeftChild()==None and node.getRightChild()==None):
-        print("max val for ",node.getNodeId()," is ", node.getNodeValue())
-        return node.getNodeValue()
+        retPath = [node.getNodeId()]
+        path.append(node.getNodeId())
+        return node.getNodeValue(),node, retPath
     node.setNodeValue(float("-inf"))
-    val =  max(node.getNodeValue(),min_value(node.getLeftChild()),min_value(node.getRightChild()))
-    print("max val for ",node.getNodeId()," is ", val)
-    node.setNodeValue(val)
-    return val
+    leftVal,leftNode, leftPath = min_value(node.getLeftChild(),path)
+    rightVal,rightNode, rightPath = min_value(node.getRightChild(),path)
+    val =  max(node.getNodeValue(),leftVal,rightVal)
+    retPath = []
+    retNode = 0
+    if(val==node.getNodeValue()):
+        print("Not adding to path")
+    elif(leftVal>rightVal):
+        retPath = leftPath
+        retNode = leftNode
+    else:
+        retPath = rightPath
+        retNode = rightNode
+    node.setNodeValue = val
+    retPath.append(node.getNodeId())
+    return val,retNode,retPath
 
-'''def alpha_beta_pruning(node,state):
-    if(node.getLeftChild()==None and node.getRightChild()==None):
-        return node.getNodeValue()
-    elif(state=="Min"):                                                         #if curr state is Min, then next states are max
-        node.setNodeValue(float('inf'))
-        return min(node.getNodeValue(),max_value_ab(node.getLeftChild()),max_value_ab(node.getRightChild()))
-    elif(state=="Max"):
-        node.setNodeValue=float("-inf")
-        return max(node.getNodeValue(),min_value_ab(node.getLeftChild()),min_value_ab(node.getRightChild()))
-    
-def min_value_ab(node,alpha,beta):
-    print("ab min")
-    if(node==None):
-        return float('-inf')
-    #node.value = float("inf") 
-    if(node.getLeftChild()==None and node.getRightChild()==None):
-         print("min val for ",node.getNodeId()," is ", node.getNodeValue())
-         return node.getNodeValue()
-    node.setNodeValue(float("inf"))
-    val = min(node.getNodeValue(),max_value_ab(node.getLeftChild(),alpha,beta),max_value_ab(node.getRightChild(),alpha,beta))
-    print("min val for ",node.getNodeId()," is ", val)
-    if(val<=alpha):
-        node.setNodeValue = val
-    beta = min(beta,val)
-    return val
-
-def max_value_ab(node,alpha,beta):
-    print("max ab")
-    if(node==None):
-        return float("inf")
-    #node.value = float("-inf")
-    if(node.getLeftChild()==None and node.getRightChild()==None):
-        print("max val for ",node.getNodeId()," is ", node.getNodeValue())
-        return node.getNodeValue()
-    node.setNodeValue(float("-inf"))
-    val =  max(node.getNodeValue(),min_value_ab(node.getLeftChild(),alpha,beta),min_value_ab(node.getRightChild(),alpha,beta))
-    print("max val for ",node.getNodeId()," is ", val)
-    if(val>=beta):
-        node.setNodeValue(val)
-    alpha = max(alpha,val)
-    return val
-'''
 
 def ab_pruning(node,depth,state,alpha,beta):
     if(node.getLeftChild()==None and node.getRightChild()==None):               #leaf node, return value of node
-        return node.getNodeValue()
+        return node.getNodeValue(),node.getNodeId()
     if(state == "Max"):
         bestVal = float("-inf")
         for i in range (0,2):
             if(i%2==0):                                                             #left child
-                val = ab_pruning(node.getLeftChild(), depth+1, "Min", alpha, beta)
+                val,leaf = ab_pruning(node.getLeftChild(), depth+1, "Min", alpha, beta)
             else:                                                                   #right child
-                val = ab_pruning(node.getRightChild(), depth+1, "Min", alpha, beta)
+                val,leaf = ab_pruning(node.getRightChild(), depth+1, "Min", alpha, beta)
+            if(val>bestVal):
+                retNode = leaf
             bestVal = max(val,bestVal)
             alpha = max(alpha,bestVal)                                              #update alpha
-            if(beta<=alpha):
+            if(beta<=alpha):                                                        #if 
                 break
-        return bestVal
+        return bestVal,retNode
     else:
         bestVal = float("inf")
         for i in range(0,2):
             if(i%2==0):
-                val = ab_pruning(node.getLeftChild(), depth+1, "Max", alpha, beta)
+                val,leaf = ab_pruning(node.getLeftChild(), depth+1, "Max", alpha, beta)
             else:
-                val = ab_pruning(node.getRightChild(), depth+1, "Max", alpha, beta)
+                val,leaf = ab_pruning(node.getRightChild(), depth+1, "Max", alpha, beta)
+            if(val<bestVal):
+                retNode = leaf
             bestVal = min(bestVal,val)
             beta = min(bestVal,beta)
             if(beta<=alpha):
                 break
-        return bestVal
+        return bestVal,retNode
     
 
 tree = BinaryTree("Root",0)
@@ -224,8 +223,18 @@ HRRR.insertRight("Leaf_16",1)
 
 #printTree(tree)
 
-output = value(tree,"Max")
-print(output)
+print("Minimax Q3.1")
 
-abPruning = ab_pruning(tree, 0, "Max", float("-inf"), float("inf"))
-print(abPruning)
+print("Output Path:- ")
+output = value(tree,"Max")
+print("Output:- ")
+print(output.getNodeValue())
+
+
+print("-------------------------------------------------------------------------")
+
+print()
+
+print("Alpha Beta Pruning Q3.3")
+bestVal,retNode = ab_pruning(tree, 0, "Max", float("-inf"), float("inf"))
+print(bestVal)
