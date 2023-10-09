@@ -223,18 +223,19 @@ HRRR.insertRight("Leaf_16",1)
 
 #printTree(tree)
 
-print("Minimax Q3.1")
+print("Minimax Q3.1\n")
 
 print("Output Path:- ")
 output = value(tree,"Max")
-print("Output:- ")
-print(output.getNodeValue())
+print()
+print("Output Value:- ")
+print(output.getNodeValue(),"\n")
 
 
 print("-------------------------------------------------------------------------")
 
-print()
 
-print("Alpha Beta Pruning Q3.3")
+print("Alpha Beta Pruning Q3.3\n")
 bestVal,retNode = ab_pruning(tree, 0, "Max", float("-inf"), float("inf"))
+print("Output:-")
 print(bestVal)
