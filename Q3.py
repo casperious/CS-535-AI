@@ -111,7 +111,14 @@ def min_value(node,path):
     node.setNodeValue = val
     retPath.append(node.getNodeId())                                                #add this node to the path and return
     return val,retNode,retPath
-    
+           
+'''
+
+max_value gets the maximum of its childrens values. If the node passed in is a leaf, then it starts the return path from the leaf, and returns 
+the value, the node object, and the retPath
+
+'''
+ 
 def max_value(node,path):
     if(node==None):
         return float("inf")
@@ -157,10 +164,11 @@ def ab_pruning(node,depth,state,alpha,beta):
             if(val>bestVal):                                                            #if value of child is greater than current bestVal
                 retNode = leaf                                                          #set terminal node to leaf of child subtree                
             bestVal = max(val,bestVal)                                                  #update bestVal to higher value
-            alpha = max(alpha,bestVal)                                                  #update alpha to higher value
-            if(beta<=alpha):                                                            #if best explored minimizer value is less than explored value, then there is no need to explore other nodes
+            if(bestVal>=beta and i%2==0):                                                            #if best explored minimizer value is less than explored value, then there is no need to explore other nodes
                 print("Pruning max ",node.getRightChild().getNodeId())    
                 break                                                                   #prune other child
+            alpha = max(alpha,bestVal)                                                  #update alpha to higher value
+            
         return bestVal,retNode
     else:
         bestVal = float("inf")                                                          #set initial value to +infinity
@@ -172,10 +180,11 @@ def ab_pruning(node,depth,state,alpha,beta):
             if(val<bestVal):                                                             #if value of child is less than current bestVal
                 retNode = leaf                                                           #set terminal node to leaf od child subtree 
             bestVal = min(bestVal,val)                                                  #update bestVal to lesser of itself and returned val
-            beta = min(bestVal,beta)                                                    #update beta to lesser of itself and bestVal
-            if(beta<=alpha):                                                            #if beta is less than best explored maximizer in its path, then there is no need to explore
+            if(bestVal<=alpha and i%2==0):                                                            #if beta is less than best explored maximizer in its path, then there is no need to explore
                 print("Pruning min ",node.getRightChild().getNodeId())   
                 break                                                                   #prune other child
+            beta = min(bestVal,beta)                                                    #update beta to lesser of itself and bestVal
+            
         return bestVal,retNode                                                          #return best value of node and terminal node
     
 
