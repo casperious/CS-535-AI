@@ -164,7 +164,7 @@ def ab_pruning(node,depth,state,alpha,beta):
             if(val>bestVal):                                                            #if value of child is greater than current bestVal
                 retNode = leaf                                                          #set terminal node to leaf of child subtree                
             bestVal = max(val,bestVal)                                                  #update bestVal to higher value
-            if(bestVal>=beta and i%2==0):                                                            #if best explored minimizer value is less than explored value, then there is no need to explore other nodes
+            if(bestVal>=beta and i%2==0):                                               #if returned value is greater than beta, then no need to explore right subtree
                 print("Pruning max ",node.getRightChild().getNodeId())    
                 break                                                                   #prune other child
             alpha = max(alpha,bestVal)                                                  #update alpha to higher value
@@ -180,7 +180,7 @@ def ab_pruning(node,depth,state,alpha,beta):
             if(val<bestVal):                                                             #if value of child is less than current bestVal
                 retNode = leaf                                                           #set terminal node to leaf od child subtree 
             bestVal = min(bestVal,val)                                                  #update bestVal to lesser of itself and returned val
-            if(bestVal<=alpha and i%2==0):                                                            #if beta is less than best explored maximizer in its path, then there is no need to explore
+            if(bestVal<=alpha and i%2==0):                                              #if returned value is less than alpha, then no need to explore right subtree
                 print("Pruning min ",node.getRightChild().getNodeId())   
                 break                                                                   #prune other child
             beta = min(bestVal,beta)                                                    #update beta to lesser of itself and bestVal
