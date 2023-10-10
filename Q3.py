@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Oct  6 15:09:56 2023
-
-@author: jerem
-"""
-
 class BinaryTree():
 
     def __init__(self,rootid,value):
@@ -47,128 +40,150 @@ def printTree(tree):
             print(tree.getNodeValue())
             printTree(tree.getRightChild())
 
-def testTree():
-    myTree = BinaryTree("l_0",0)
-    myTree.insertLeft("l_10",1)
-    myTree.insertRight("l_11",2)
-    l10 = myTree.getLeftChild()
-    l10.insertLeft("l_20",3)
-    l10.insertRight("l_21",4)
-    l11 = myTree.getRightChild()
-    l11.insertLeft("l_22",5)
-    l11.insertRight("l_23",6)
+'''
 
-    printTree(myTree)
+value(node,state): This function takes in the root node, and the state to start at (Min or Max)
+Calls min_value on children if starting state is max, set root node value to min of children and itself
+Calls max_value on children if starting state is min, set root node value to max of children and itself
 
+'''
 
 def value(node,state):
     if(node.getLeftChild()==None and node.getRightChild()==None):
         return node.getNodeValue()
     elif(state=="Min"):                                                         #if curr state is Min, then next states are max
         node.setNodeValue(float('inf'))
-        leftVal,leftNode, leftPath = max_value(node.getLeftChild(),[])
-        rightVal,rightNode, rightPath = max_value(node.getRightChild(),[])
-        minVal= min(node.getNodeValue(),leftVal,rightVal)
+        leftVal,leftNode, leftPath = max_value(node.getLeftChild(),[])          #start recursive call of minimax on left node
+        rightVal,rightNode, rightPath = max_value(node.getRightChild(),[])      #start recursive call of minimax on right node
+        minVal= min(node.getNodeValue(),leftVal,rightVal) 
+        node.setNodeValue(minVal)                                               #set root value
+        if(leftVal<rightVal):                                                   #compare both values, choose the path and node of the lower
+            retPath = leftPath
+            retNode = leftNode
+        else:
+            retPath = rightPath
+            retNode = rightNode
     elif(state=="Max"):
         node.setNodeValue(float("-inf"))
-        leftVal,leftNode, leftPath = min_value(node.getLeftChild(),[])
-        rightVal,rightNode, rightPath = min_value(node.getRightChild(),[])
+        leftVal,leftNode, leftPath = min_value(node.getLeftChild(),[])          #start recursive call of minimax on left node
+        rightVal,rightNode, rightPath = min_value(node.getRightChild(),[])      #start recursive call of minimax on right node
         retPath = []
         maxVal = max(node.getNodeValue(),leftVal,rightVal)
-        if(leftVal>rightVal):
+        node.setNodeValue(maxVal)                                               #set root value
+        if(leftVal>rightVal):                                                   #compare both values, choose the path and node of the higher
             retPath = leftPath
             retNode = leftNode
         else:
             retPath = rightPath
             retNode = rightNode
     retPath.append(node.getNodeId())
-    print(retPath)
+    print(retPath)                                                              #print path to terminal leaf node
     return retNode
         
+'''
+
+min_value gets the minimum of its childrens values. If the node passed in is a leaf, then it starts the return path from the leaf, and returns 
+the value, the node object, and the retPath
+
+'''
+
 def min_value(node,path):
     if(node==None):
         return float('-inf')
-    if(node.getLeftChild()==None and node.getRightChild()==None):
-         retPath = [node.getNodeId()]
+    if(node.getLeftChild()==None and node.getRightChild()==None):                   #Leaf node
+         retPath = [node.getNodeId()]                                               #Create path array starting at leaf
          path.append(node.getNodeId())
          return node.getNodeValue(),node, retPath
-    node.setNodeValue(float("inf"))
-    leftVal,leftNode, leftPath = max_value(node.getLeftChild(),path)
-    rightVal,rightNode, rightPath = max_value(node.getRightChild(),path)
-    val = min(node.getNodeValue(),leftVal,rightVal)
+    node.setNodeValue(float("inf"))                                                 #Subtree node. Set value to +infinity
+    leftVal,leftNode, leftPath = max_value(node.getLeftChild(),path)                #call max_value on left child
+    rightVal,rightNode, rightPath = max_value(node.getRightChild(),path)            #call max_value on right child
+    val = min(node.getNodeValue(),leftVal,rightVal)                                 #get min of +inf, left and right child
     retPath = []
     retNode = 0
     if(val==node.getNodeValue()):
         print("Not adding to path")
-    elif(leftVal<rightVal):
+    elif(leftVal<rightVal):                                                         #compare left and right values, and choose the lower value path and node to return
         retPath = leftPath
         retNode = leftNode
     else:
         retPath = rightPath
         retNode = rightNode
     node.setNodeValue = val
-    retPath.append(node.getNodeId())
+    retPath.append(node.getNodeId())                                                #add this node to the path and return
     return val,retNode,retPath
     
 def max_value(node,path):
     if(node==None):
         return float("inf")
-    if(node.getLeftChild()==None and node.getRightChild()==None):
-        retPath = [node.getNodeId()]
+    if(node.getLeftChild()==None and node.getRightChild()==None):                   #Leaf node
+        retPath = [node.getNodeId()]                                                #create path array starting at leaf
         path.append(node.getNodeId())
         return node.getNodeValue(),node, retPath
-    node.setNodeValue(float("-inf"))
-    leftVal,leftNode, leftPath = min_value(node.getLeftChild(),path)
-    rightVal,rightNode, rightPath = min_value(node.getRightChild(),path)
-    val =  max(node.getNodeValue(),leftVal,rightVal)
+    node.setNodeValue(float("-inf"))                                                #subtree node. set value to -infinity
+    leftVal,leftNode, leftPath = min_value(node.getLeftChild(),path)                #call min_value on left child
+    rightVal,rightNode, rightPath = min_value(node.getRightChild(),path)            #call min_value on right child
+    val =  max(node.getNodeValue(),leftVal,rightVal)                                #get max of -inf, left and right child
     retPath = []
     retNode = 0
     if(val==node.getNodeValue()):
         print("Not adding to path")
-    elif(leftVal>rightVal):
+    elif(leftVal>rightVal):                                                         #compare left and right values, and choose the higher value path and node to return
         retPath = leftPath
         retNode = leftNode
     else:
         retPath = rightPath
         retNode = rightNode
     node.setNodeValue = val
-    retPath.append(node.getNodeId())
+    retPath.append(node.getNodeId())                                                #add this node to the path and return
     return val,retNode,retPath
 
+'''
+
+ab_pruning performs alpha beta pruning on given binary tree.
+Accepts the node, its depth, the state "Min" or "Max", the alpha and beta values
+
+'''
 
 def ab_pruning(node,depth,state,alpha,beta):
-    if(node.getLeftChild()==None and node.getRightChild()==None):               #leaf node, return value of node
-        return node.getNodeValue(),node.getNodeId()
-    if(state == "Max"):
-        bestVal = float("-inf")
-        for i in range (0,2):
-            if(i%2==0):                                                             #left child
+    if(node.getLeftChild()==None and node.getRightChild()==None):                       #leaf node
+        return node.getNodeValue(),node.getNodeId()                                     #Return leaf value and name                
+    if(state == "Max"):                                                                 #Max node                
+        bestVal = float("-inf")                                                         #set initial value to -infinity        
+        for i in range (0,2):                                                           #loop through children                
+            if(i%2==0):                                                                 #left child first
                 val,leaf = ab_pruning(node.getLeftChild(), depth+1, "Min", alpha, beta)
-            else:                                                                   #right child
+            else:                                                                       #right child second
                 val,leaf = ab_pruning(node.getRightChild(), depth+1, "Min", alpha, beta)
-            if(val>bestVal):
-                retNode = leaf
-            bestVal = max(val,bestVal)
-            alpha = max(alpha,bestVal)                                              #update alpha
-            if(beta<=alpha):                                                        #if 
-                break
+            if(val>bestVal):                                                            #if value of child is greater than current bestVal
+                retNode = leaf                                                          #set terminal node to leaf of child subtree                
+            bestVal = max(val,bestVal)                                                  #update bestVal to higher value
+            alpha = max(alpha,bestVal)                                                  #update alpha to higher value
+            if(beta<=alpha):                                                            #if best explored minimizer value is less than explored value, then there is no need to explore other nodes
+                print("Pruning max ",node.getRightChild().getNodeId())    
+                break                                                                   #prune other child
         return bestVal,retNode
     else:
-        bestVal = float("inf")
-        for i in range(0,2):
+        bestVal = float("inf")                                                          #set initial value to +infinity
+        for i in range(0,2):                                                            #loop through children
             if(i%2==0):
-                val,leaf = ab_pruning(node.getLeftChild(), depth+1, "Max", alpha, beta)
+                val,leaf = ab_pruning(node.getLeftChild(), depth+1, "Max", alpha, beta) #left child first
             else:
-                val,leaf = ab_pruning(node.getRightChild(), depth+1, "Max", alpha, beta)
-            if(val<bestVal):
-                retNode = leaf
-            bestVal = min(bestVal,val)
-            beta = min(bestVal,beta)
-            if(beta<=alpha):
-                break
-        return bestVal,retNode
+                val,leaf = ab_pruning(node.getRightChild(), depth+1, "Max", alpha, beta) #right child second
+            if(val<bestVal):                                                             #if value of child is less than current bestVal
+                retNode = leaf                                                           #set terminal node to leaf od child subtree 
+            bestVal = min(bestVal,val)                                                  #update bestVal to lesser of itself and returned val
+            beta = min(bestVal,beta)                                                    #update beta to lesser of itself and bestVal
+            if(beta<=alpha):                                                            #if beta is less than best explored maximizer in its path, then there is no need to explore
+                print("Pruning min ",node.getRightChild().getNodeId())   
+                break                                                                   #prune other child
+        return bestVal,retNode                                                          #return best value of node and terminal node
     
 
+'''
+
+Build Tree
+
+'''
 tree = BinaryTree("Root",0)
 tree.insertLeft("H_1_L",0)
 tree.insertRight("H_1_R",0)
@@ -221,7 +236,12 @@ HRRL.insertRight("Leaf_14",7)
 HRRR.insertLeft("Leaf_15",9)
 HRRR.insertRight("Leaf_16",1)
 
-#printTree(tree)
+'''
+
+Call solution functions
+
+'''
+
 
 print("Minimax Q3.1\n")
 
@@ -237,5 +257,6 @@ print("-------------------------------------------------------------------------
 
 print("Alpha Beta Pruning Q3.3\n")
 bestVal,retNode = ab_pruning(tree, 0, "Max", float("-inf"), float("inf"))
+print()
 print("Output:-")
 print(bestVal)

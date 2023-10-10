@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Oct  6 14:27:54 2023
-
-@author: jerem
-"""
-
 from collections import deque
 import heapq
 
@@ -23,6 +16,11 @@ g3_vertex_list = {
     'S': {'d':3,'e':9,'p':1},
     }
 
+'''
+
+This function returns the predefined heuristic value of the node
+
+'''
 def h(node):
     match node:
         case "a":
